@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -44,5 +45,5 @@ func main() {
 
 	host := os.Getenv("HOST")
 
-	http.ListenAndServe(host+":"+port, getMux())
+	log.Fatal(http.ListenAndServe(host+":"+port, getMux()))
 }
