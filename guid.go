@@ -21,7 +21,10 @@ func Calculate(etkey string) (guid string, err error) {
 		return "", ErrInvalidEtKey
 	}
 
+	// etkey is hashed twice with different seeds
 	guid = fmt.Sprintf("%x", md5.Sum([]byte(etkey), Seed1))
+
+	// second hash is computed over the hex string of the first round
 	guid = fmt.Sprintf("%X", md5.Sum([]byte(guid), Seed2))
 
 	return
