@@ -32,7 +32,7 @@ func calculateGuid(w http.ResponseWriter, r *http.Request) {
 
 func getMux() http.Handler {
 	router := mux.NewRouter()
-	router.HandleFunc("/", calculateGuid).Methods("POST").Headers("Content-Length", "18")
+	router.HandleFunc("/", calculateGuid).Methods("POST")
 
 	return router
 }

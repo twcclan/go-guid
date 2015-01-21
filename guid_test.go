@@ -1,8 +1,10 @@
 package guid
 
 import (
-	. "gopkg.in/check.v1"
+	"fmt"
 	"testing"
+
+	. "gopkg.in/check.v1"
 )
 
 func Test(t *testing.T) { TestingT(t) }
@@ -23,5 +25,17 @@ func (g *GuidSuite) TestGuid(c *C) {
 		c.Assert(guid, HasLen, 32)
 		c.Assert(err, IsNil)
 		c.Assert(guid, Equals, g)
+	}
+}
+
+var guid string
+var err error
+
+func (g *GuidSuite) BenchmarkGuid(c *C) {
+	for i := 0; i < c.N; i++ {
+		key := fmt.Sprintf("%018d", i)
+
+		//c.ResetTimer()
+		guid, err = Calculate(key)
 	}
 }
