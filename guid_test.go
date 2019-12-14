@@ -32,10 +32,15 @@ var guid string
 var err error
 
 func (g *GuidSuite) BenchmarkGuid(c *C) {
+	var keys []string
 	for i := 0; i < c.N; i++ {
-		key := fmt.Sprintf("%018d", i)
+		keys = append(keys, fmt.Sprintf("%018d", i))
 
-		//c.ResetTimer()
-		guid, err = Calculate(key)
+	}
+
+	c.ResetTimer()
+
+	for i := range keys {
+		guid, err = Calculate(keys[i])
 	}
 }
