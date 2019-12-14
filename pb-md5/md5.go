@@ -1,3 +1,7 @@
+// Base on golang.org/pkg/crypto/md5
+// Modified to compute MD5 hashes like EvenBalance's PunkBuster
+// see original copyright below
+
 // Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -11,15 +15,10 @@
 package md5
 
 import (
-	"crypto"
 	"encoding/binary"
 	"errors"
 	"hash"
 )
-
-func init() {
-	crypto.RegisterHash(crypto.MD5, New)
-}
 
 // The size of an MD5 checksum in bytes.
 const Size = 16
@@ -43,10 +42,14 @@ type digest struct {
 }
 
 func (d *digest) Reset() {
-	d.s[0] = init0
-	d.s[1] = init1
-	d.s[2] = init2
-	d.s[3] = init3
+	d.reset(0)
+}
+
+func (d *digest) reset(pseudoRandomNumber uint32) {
+	d.s[0] = uint32(init0 + pseudoRandomNumber*11)
+	d.s[1] = uint32(init1 + pseudoRandomNumber*71)
+	d.s[2] = uint32(init2 + pseudoRandomNumber*37)
+	d.s[3] = uint32(init3 + pseudoRandomNumber*97)
 	d.nx = 0
 	d.len = 0
 }
@@ -110,9 +113,9 @@ func consumeUint32(b []byte) ([]byte, uint32) {
 // New returns a new hash.Hash computing the MD5 checksum. The Hash also
 // implements encoding.BinaryMarshaler and encoding.BinaryUnmarshaler to
 // marshal and unmarshal the internal state of the hash.
-func New() hash.Hash {
+func New(pseudoRandomNumber uint32) hash.Hash {
 	d := new(digest)
-	d.Reset()
+	d.reset(pseudoRandomNumber)
 	return d
 }
 
@@ -187,9 +190,9 @@ func (d *digest) checkSum() [Size]byte {
 }
 
 // Sum returns the MD5 checksum of the data.
-func Sum(data []byte) [Size]byte {
+func Sum(data []byte, seed uint32) [Size]byte {
 	var d digest
-	d.Reset()
+	d.reset(seed)
 	d.Write(data)
 	return d.checkSum()
 }
